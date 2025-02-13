@@ -140,10 +140,24 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'account.Account'
 
+REDIS_HOST = os.getenv('REDIS_HOST')
+
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": f"redis://{os.getenv('REDIS_HOST')}:6379",
+        "LOCATION": f"redis://{REDIS_HOST}:6379",
+    },
+    'otp': {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": f"redis://{REDIS_HOST}:6379",
+        'KEY_PREFIX': 'otp',
+        'VERSION': 1
+    },
+    'access_token': {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": f"redis://{REDIS_HOST}:6379",
+        'KEY_PREFIX': 'access_token',
+        'VERSION': 1
     }
 }
 
@@ -151,4 +165,7 @@ CACHES = {
 REST_FRAMEWORK = {     
     # ВАШИ НАСТРОЙКИ     
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema', 
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'api.auth.JWTAuthentication'
+    ),
 }
