@@ -20,8 +20,6 @@ from .shemas import OTPConfirmSchema, OTPCreateSchema
 
 class OTPEndpoint(viewsets.ViewSet):
     
-    authentication_classes = [JWTAuthentication]
-    
     _secret_nbytes = 16
     _expiration_sec = 300  # 5 min
     _algorithm = 'HS256'
