@@ -128,10 +128,7 @@ class OTPEndpoint(viewsets.ViewSet):
         return '0' * digits
     
     def _generate_jwt_token(self, payload: dict, ttl: int):
-        """
-        Генерирует веб-токен JSON, в котором хранится идентификатор этого
-        пользователя, срок действия токена составляет 1 день от создания
-        """
+       
         exp = time.time() + ttl
 
         token = jwt.encode(

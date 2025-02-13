@@ -4,26 +4,15 @@ from rest_framework import authentication
 from rest_framework.request import Request
 from rest_framework import exceptions
 
+from account.models import Account
+
 
 class JWTAuthentication(authentication.BaseAuthentication):
     
     authentication_header_prefix = 'Bearer'
 
     def authenticate(self, request: Request):
-        """
-        Метод authenticate вызывается каждый раз, независимо от того, требует
-        ли того эндпоинт аутентификации. 'authenticate' имеет два возможных
-        возвращаемых значения:
-            1) None - мы возвращаем None если не хотим аутентифицироваться.
-            Обычно это означает, что мы значем, что аутентификация не удастся.
-            Примером этого является, например, случай, когда токен не включен в
-            заголовок.
-            2) (user, token) - мы возвращаем комбинацию пользователь/токен
-            тогда, когда аутентификация пройдена успешно. Если ни один из
-            случаев не соблюден, это означает, что произошла ошибка, и мы
-            ничего не возвращаем. В таком случае мы просто вызовем исключение
-            AuthenticationFailed и позволим DRF сделать все остальное.
-        """
+
         request.user = None
 
         # 'auth_header' должен быть массивом с двумя элементами:
@@ -60,10 +49,6 @@ class JWTAuthentication(authentication.BaseAuthentication):
         return self._authenticate_credentials(request, token)
 
     def _authenticate_credentials(self, request, token):
-        """
-        Попытка аутентификации с предоставленными данными. Если успешно -
-        вернуть пользователя и токен, иначе - сгенерировать исключение.
-        """
         try:
             payload = jwt.decode(token, settings.SECRET_KEY)
         except Exception:
@@ -71,8 +56,8 @@ class JWTAuthentication(authentication.BaseAuthentication):
             raise exceptions.AuthenticationFailed(msg)
 
         try:
-            user = User.objects.get(pk=payload['id'])
-        except User.DoesNotExist:
+            user = Account.objects.get(pk=payload['id'])
+        except Account.DoesNotExist:
             msg = 'Пользователь соответствующий данному токену не найден.'
             raise exceptions.AuthenticationFailed(msg)
 
